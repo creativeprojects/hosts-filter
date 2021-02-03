@@ -1,11 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/creativeprojects/clog"
 	"github.com/creativeprojects/hosts-filter/cfg"
+	"github.com/creativeprojects/hosts-filter/constants"
+	"github.com/creativeprojects/hosts-filter/list"
 )
 
 // These fields are populated by the goreleaser build
@@ -50,7 +51,7 @@ func main() {
 		setupConsoleLogger(flags)
 	}
 
-	// keep this one last if possible (so it will be first at the end)
+	// keep this defer last if possible (so it will be first at the end)
 	defer showPanicData()
 
 	configFile, err := cfg.FindConfigurationFile(flags.config)
@@ -69,5 +70,30 @@ func main() {
 		exitCode = 1
 		return
 	}
-	fmt.Printf("%+v", c)
+
+	entries := make(map[string]bool, constants.BUFFER_INITIAL_ENTRIES)
+	for _, def := range c.Lists {
+		loadFile(def.URL, entries)
+		if err != nil {
+			clog.Error(err)
+			continue
+		}
+	}
+	clog.Debugf("Entries: %d\n", len(entries))
+}
+
+func loadFile(filename string, entries map[string]bool) error {
+	file, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	lines, err := list.LoadLines(file)
+	if err != nil {
+		return err
+	}
+	list.LoadEntries(lines, entries)
+	clog.Debugf("Entries: %d\n", len(entries))
+	return nil
 }

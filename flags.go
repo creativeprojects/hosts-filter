@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/pflag"
@@ -18,7 +19,13 @@ type commandLineFlags struct {
 // loadFlags loads command line flags
 func loadFlags() (*pflag.FlagSet, commandLineFlags) {
 	flagset := pflag.NewFlagSet("hosts-filter", pflag.ExitOnError)
-
+	flagset.Usage = func() {
+		fmt.Println("\nUsage of hosts-filter:")
+		fmt.Println("\nhosts-filter [flags]")
+		fmt.Println("\nhosts-filter flags:")
+		flagset.PrintDefaults()
+		fmt.Println("\nMore information: https://github.com/creativeprojects/hosts-filter")
+	}
 	flags := commandLineFlags{}
 
 	flagset.BoolVarP(&flags.help, "help", "h", false, "display this help")

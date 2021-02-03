@@ -15,6 +15,7 @@ const (
 
 // Config from the file
 type Config struct {
+	IP    string `yaml:"ip"`
 	Lists []List `yaml:"lists"`
 }
 
@@ -23,7 +24,7 @@ type List struct {
 	URL string `yaml:"url"`
 }
 
-// LoadFileConfig loads the configuration from the file
+// LoadFile loads the configuration from the file
 func LoadFile(fileName string) (Config, error) {
 	file, err := os.Open(fileName)
 	if err != nil {

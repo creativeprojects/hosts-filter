@@ -1,0 +1,6 @@
+package constants
+
+const (
+	BUFFER_INITIAL_LINES   = 20000
+	BUFFER_INITIAL_ENTRIES = 30000
+)

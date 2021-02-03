@@ -1,0 +1,14 @@
+---
+lists:
+  # -
+  #   url: http://winhelp2002.mvps.org/hosts.txt
+  # -
+  #   url: http://someonewhocares.org/hosts/hosts
+  # -
+  #   url: http://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&mimetype=plaintext
+  -
+    url: lists/mvps.txt
+  -
+    url: lists/pollock.txt
+  -
+    url: lists/lowe.txt
