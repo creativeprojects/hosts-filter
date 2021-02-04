@@ -1,6 +1,9 @@
 package main
 
 import (
+	"io"
+	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/creativeprojects/clog"
@@ -71,9 +74,9 @@ func main() {
 		return
 	}
 
-	entries := make(map[string]bool, constants.BUFFER_INITIAL_ENTRIES)
+	entries := make(map[string]bool, constants.BufferInitialEntries)
 	for _, def := range c.Lists {
-		loadFile(def.URL, entries)
+		err := loadFile(def.URL, entries)
 		if err != nil {
 			clog.Error(err)
 			continue
@@ -83,17 +86,33 @@ func main() {
 }
 
 func loadFile(filename string, entries map[string]bool) error {
-	file, err := os.Open(filename)
-	if err != nil {
-		return err
+	var reader io.Reader
+	URL, err := url.Parse(filename)
+	if err != nil || URL.Scheme == "" {
+		// entry should be a file on disk
+		file, err := os.Open(filename)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+		reader = file
+	} else {
+		// entry is http resource
+		client := http.DefaultClient
+		resp, err := client.Get(filename)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		reader = resp.Body
 	}
-	defer file.Close()
 
-	lines, err := list.LoadLines(file)
+	lines, err := list.LoadLines(reader)
 	if err != nil {
 		return err
 	}
+
 	list.LoadEntries(lines, entries)
-	clog.Debugf("Entries: %d\n", len(entries))
+	clog.Infof("loaded %q: %d entries in total", filename, len(entries))
 	return nil
 }

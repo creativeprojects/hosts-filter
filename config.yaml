@@ -9,6 +9,10 @@ lists:
   -
     url: lists/mvps.txt
   -
+    url: lists/error.txt
+  -
+    url: http://localhost/error.txt
+  -
     url: lists/pollock.txt
   -
     url: lists/lowe.txt
