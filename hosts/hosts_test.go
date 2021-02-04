@@ -39,7 +39,7 @@ func TestUpdateEmptyHostsfile(t *testing.T) {
 	buffer := &strings.Builder{}
 	err := Update("", "ip", nil, buffer)
 	require.NoError(t, err)
-	assert.Equal(t, "\n"+startMarker+endMarker, buffer.String())
+	assert.Equal(t, "", buffer.String())
 }
 
 func TestUpdateSimpleHostsfile(t *testing.T) {
@@ -54,4 +54,11 @@ func TestUpdateExistingHostsfile(t *testing.T) {
 	err := Update("something\n"+startMarker+endMarker, "ip", []string{"line1", "line2"}, buffer)
 	require.NoError(t, err)
 	assert.Equal(t, "something\n"+startMarker+"ip line1\nip line2\n"+endMarker, buffer.String())
+}
+
+func TestRemoveEntriesFromHostsfile(t *testing.T) {
+	buffer := &strings.Builder{}
+	err := Update("\n"+startMarker+endMarker, "ip", nil, buffer)
+	require.NoError(t, err)
+	assert.Equal(t, "\n", buffer.String())
 }
