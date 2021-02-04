@@ -1,11 +1,19 @@
 ---
-lists:
+# hosts file to update (leave blank for the system default)
+hosts_file: ./lists/hosts
+
+# IP used for filtered domains: default is 0.0.0.0
+# ip: 0.0.0.0
+
+block_lists:
   # -
   #   url: http://winhelp2002.mvps.org/hosts.txt
   # -
   #   url: http://someonewhocares.org/hosts/hosts
   # -
   #   url: http://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&mimetype=plaintext
+  # -
+  #   url: http://www.malwaredomainlist.com/hostslist/hosts.txt
   -
     url: lists/mvps.txt
   -
@@ -16,3 +24,10 @@ lists:
     url: lists/pollock.txt
   -
     url: lists/lowe.txt
+
+# list of domains to remove from the lists
+allow:
+  - github.com
+
+# file containing a list of domains allowed (one per line)
+allow_from: allow.txt

@@ -15,8 +15,11 @@ const (
 
 // Config from the file
 type Config struct {
-	IP    string `yaml:"ip"`
-	Lists []List `yaml:"lists"`
+	HostsFile  string   `yaml:"hosts_file"`
+	IP         string   `yaml:"ip"`
+	BlockLists []List   `yaml:"block_lists"`
+	Allow      []string `yaml:"allow"`
+	AllowFrom  string   `yaml:"allow_from"`
 }
 
 // List configuration

@@ -26,7 +26,7 @@ func LoadEntries(lines []string, entries map[string]bool) {
 	if entries == nil {
 		entries = make(map[string]bool, constants.BufferInitialEntries)
 	}
-	for _, line := range lines {
+	for num, line := range lines {
 		if line == "" {
 			continue
 		}
@@ -37,16 +37,17 @@ func LoadEntries(lines []string, entries map[string]bool) {
 		commentedOut := strings.Split(line, "#")
 		parts := strings.Split(trim(commentedOut[0]), " ")
 		if len(parts) != 2 {
-			clog.Debugf("entry ignored: %q", line)
+			clog.Debugf("entry ignored one line %d: %q", num+1, line)
 			continue
 		}
 		// check the IP is for a filtered domain
 		if parts[0] != "0.0.0.0" && parts[0] != "127.0.0.1" {
-
+			clog.Debugf("entry ignored one line %d: %q", num+1, line)
+			continue
 		}
 		// check the entry is not ignored
 		if isIgnored(parts[1]) {
-			clog.Debugf("entry ignored: %q", line)
+			clog.Debugf("entry ignored one line %d: %q", num+1, line)
 			continue
 		}
 		entries[parts[1]] = true

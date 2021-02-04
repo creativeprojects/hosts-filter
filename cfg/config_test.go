@@ -10,12 +10,12 @@ import (
 func TestEmptyConfiguration(t *testing.T) {
 	config, err := loadConfig(bytes.NewReader([]byte("---")))
 	assert.NoError(t, err)
-	assert.Len(t, config.Lists, 0)
+	assert.Len(t, config.BlockLists, 0)
 }
 
 func TestSimpleConfiguration(t *testing.T) {
 	content := `---
-lists:
+block_lists:
   # comment
   - url: http://something
   -
@@ -23,5 +23,5 @@ lists:
 `
 	config, err := loadConfig(bytes.NewReader([]byte(content)))
 	assert.NoError(t, err)
-	assert.Len(t, config.Lists, 2)
+	assert.Len(t, config.BlockLists, 2)
 }
