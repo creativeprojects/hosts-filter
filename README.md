@@ -4,6 +4,12 @@
 
 Compile and update your hosts file from various block lists. Works on various unixes, Linux, macOS X and Windows.
 
+This tool simply download lists of bad domains (adware, spyware, phishing, scam, etc.) and adds an entry into your hosts file like:
+```
+0.0.0.0 bad.domain
+```
+which means your computer cannot find the malicious domain to load as it points to an invalid IP (`0.0.0.0`).
+
 # Configuration
 
 Put all the block list URL into a config file `config.yaml`:
@@ -64,6 +70,54 @@ loaded "http://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&mimetype=p
 ```
 $ sudo hosts-filter -r
 ```
+
+
+# Installation (macOS, Linux & other unixes)
+
+Here's a simple script to download the binary automatically. It works on mac OS X, FreeBSD and Linux:
+
+```
+$ curl -sfL https://raw.githubusercontent.com/creativeprojects/hosts-filter/main/install.sh | sh
+```
+
+It should copy hosts-filter in a `bin` directory under your current directory.
+
+If you need more control, you can save the shell script and run it manually:
+
+```
+$ curl -LO https://raw.githubusercontent.com/creativeprojects/hosts-filter/main/install.sh
+$ chmod +x install.sh
+$ sudo ./install.sh -b /usr/local/bin
+```
+
+It will install hosts-filter in `/usr/local/bin/`
+
+
+## Installation for Windows using bash
+
+You can use the same script if you're using bash in Windows (via WSL, git bash, etc.)
+
+```
+$ curl -LO https://raw.githubusercontent.com/creativeprojects/hosts-filter/main/install.sh
+$ ./install.sh
+```
+It will create a `bin` directory under your current directory and place `hosts-filter.exe` in it.
+
+## Manual installation (Windows)
+
+- Download the package corresponding to your system and CPU from the [release page](https://github.com/creativeprojects/hosts-filter/releases)
+- Once downloaded you need to open the archive and copy the binary file `hosts-filter` (or `hosts-filter.exe`) in your PATH.
+
+# Using docker image ##
+
+You can run hosts-filter inside a docker container. It is probably the easiest way to install hosts-filter and keep it updated.
+
+By default, the hosts-filter container starts at `/hosts-filter`. So you can feed a configuration this way:
+
+```
+$ docker run -it --rm -v $PWD/examples:/hosts-filter creativeprojects/hosts-filter
+```
+
 
 # License
 
