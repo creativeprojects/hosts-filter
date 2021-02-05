@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/adrg/xdg"
 	"gopkg.in/yaml.v2"
@@ -11,6 +12,14 @@ import (
 
 const (
 	XDGAppName = "hosts-filter"
+)
+
+var (
+	defaultConfigurationLocationsUnix = []string{
+		"/etc/",
+		"/usr/local/etc/",
+		"/opt/local/etc/",
+	}
 )
 
 // Config from the file
@@ -48,12 +57,16 @@ func loadConfig(reader io.Reader) (Config, error) {
 }
 
 func FindConfigurationFile(configFile string) (string, error) {
-	// 1. Simple case: current folder (or rooted path)
+	// search from the current folder (or rooted path)
 	if fileExists(configFile) {
 		return configFile, nil
 	}
 
-	// 2. Next we try xdg as the "standard" for user configuration locations
+	// add some other paths to xdg search
+	if runtime.GOOS != "windows" && runtime.GOOS != "darwin" {
+		xdg.ConfigDirs = append(xdg.ConfigDirs, defaultConfigurationLocationsUnix...)
+	}
+	// try xdg as the "standard" for user configuration locations
 	xdgFilename, err := xdg.SearchConfigFile(filepath.Join(XDGAppName, configFile))
 	if err == nil {
 		if fileExists(xdgFilename) {

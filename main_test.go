@@ -8,20 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSortedKeys(t *testing.T) {
-	testData := []map[string]bool{
-		{"line1": true, "line2": true, "line3": true},
-		{"line2": true, "line1": true, "line3": true},
-		{"line3": true, "line1": true, "line2": true},
-		{"line3": true, "line2": true, "line1": true},
-	}
-	for _, testMap := range testData {
-		t.Run("", func(t *testing.T) {
-			assert.Equal(t, []string{"line1", "line2", "line3"}, sortedKeys(testMap))
-		})
-	}
-}
-
 func TestExpandEnv(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("Test designed for Unix systems")

@@ -9,7 +9,6 @@ import (
 	"os"
 	"regexp"
 	"runtime"
-	"sort"
 	"time"
 
 	"github.com/creativeprojects/clog"
@@ -157,7 +156,7 @@ func main() {
 	}
 
 	tempfile := c.HostsFile + "-" + randSeq(6)
-	err = saveHostsfile(source, c.IP, sortedKeys(entries), tempfile)
+	err = saveHostsfile(source, c.IP, list.SortedKeys(entries), tempfile)
 	if err != nil {
 		clog.Errorf("cannot write to temporary file: %v", err)
 		exitCode = 1
@@ -206,19 +205,6 @@ func loadListfile(filename string, entries map[string]bool) error {
 	list.LoadEntries(lines, entries)
 	clog.Infof("loaded %q: %d entries in total", filename, len(entries))
 	return nil
-}
-
-func sortedKeys(input map[string]bool) []string {
-	output := make([]string, len(input))
-	index := 0
-	for key, _ := range input {
-		output[index] = key
-		index++
-	}
-	sort.Slice(output, func(i, j int) bool {
-		return output[i] < output[j]
-	})
-	return output
 }
 
 func loadHostsfile(hostsfile string) (string, error) {
