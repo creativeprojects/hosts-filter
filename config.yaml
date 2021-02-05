@@ -17,10 +17,6 @@ block_lists:
   -
     url: lists/mvps.txt
   -
-    url: lists/error.txt
-  -
-    url: http://localhost/error.txt
-  -
     url: lists/pollock.txt
   -
     url: lists/lowe.txt
@@ -30,4 +26,4 @@ allow:
   - github.com
 
 # file containing a list of domains allowed (one per line)
-allow_from: allow.txt
+# allow_from: allow.txt

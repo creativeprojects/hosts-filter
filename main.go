@@ -123,7 +123,24 @@ func main() {
 
 		// remove entries from the allow list
 		for _, allow := range c.Allow {
+			if allow == "" {
+				continue
+			}
 			delete(entries, allow)
+		}
+
+		if c.AllowFrom != "" {
+			allowList, err := loadAllowList(c.AllowFrom)
+			if err != nil {
+				clog.Errorf("error while loading the allow list: %v", err)
+			} else {
+				for _, allow := range allowList {
+					if allow == "" {
+						continue
+					}
+					delete(entries, allow)
+				}
+			}
 		}
 	}
 
@@ -153,6 +170,7 @@ func main() {
 		exitCode = 1
 		return
 	}
+	clog.Debugf("file %q successfully saved", c.HostsFile)
 }
 
 func banner() {
@@ -248,4 +266,14 @@ func expandEnv(value string) string {
 		value = pattern.ReplaceAllString(value, `${$1}`)
 	}
 	return os.ExpandEnv(value)
+}
+
+func loadAllowList(filename string) ([]string, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	return list.LoadLines(file)
 }
