@@ -6,17 +6,19 @@ import (
 	"runtime"
 	"runtime/debug"
 	"text/tabwriter"
+
+	"github.com/creativeprojects/hosts-filter/constants"
 )
 
 func showPanicData() {
 	if r := recover(); r != nil {
 		message := `
 ===============================================================
-uh-oh! hosts-filter crashed miserably :-(
+uh-oh! %s crashed miserably :-(
 Can you please open an issue on github including these details:
 ===============================================================
 `
-		fmt.Fprint(os.Stderr, message)
+		fmt.Fprintf(os.Stderr, message, constants.Name)
 		w := tabwriter.NewWriter(os.Stderr, 0, 0, 3, ' ', 0)
 		_, _ = fmt.Fprintf(w, "\t%s:\t%s\n", "os", runtime.GOOS)
 		_, _ = fmt.Fprintf(w, "\t%s:\t%s\n", "arch", runtime.GOARCH)

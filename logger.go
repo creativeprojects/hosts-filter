@@ -8,10 +8,18 @@ import (
 )
 
 func setupConsoleLogger(flags commandLineFlags) {
-	consoleHandler := clog.NewConsoleHandler("", 0)
-	if flags.noAnsi {
-		consoleHandler.Colouring(false)
+	if !flags.stdout {
+		// coloured console to stdout
+		consoleHandler := clog.NewConsoleHandler("", 0)
+		if flags.noAnsi {
+			consoleHandler.Colouring(false)
+		}
+		logger := newFilteredLogger(flags, consoleHandler)
+		clog.SetDefaultLogger(logger)
+		return
 	}
+	// we use stdout to send the hosts file, so we need to redirect logs to stderr instead
+	consoleHandler := clog.NewStandardLogHandler(os.Stderr, "", 0)
 	logger := newFilteredLogger(flags, consoleHandler)
 	clog.SetDefaultLogger(logger)
 }

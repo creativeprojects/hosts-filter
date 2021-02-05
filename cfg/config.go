@@ -1,25 +1,16 @@
 package cfg
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/adrg/xdg"
+	"github.com/creativeprojects/hosts-filter/constants"
 	"gopkg.in/yaml.v2"
-)
-
-const (
-	XDGAppName = "hosts-filter"
-)
-
-var (
-	defaultConfigurationLocationsUnix = []string{
-		"/etc/",
-		"/usr/local/etc/",
-		"/opt/local/etc/",
-	}
 )
 
 // Config from the file
@@ -57,24 +48,43 @@ func loadConfig(reader io.Reader) (Config, error) {
 }
 
 func FindConfigurationFile(configFile string) (string, error) {
-	// search from the current folder (or rooted path)
+	// 1. search from the current folder (or rooted path)
 	if fileExists(configFile) {
 		return configFile, nil
 	}
 
-	// add some other paths to xdg search
-	if runtime.GOOS != "windows" && runtime.GOOS != "darwin" {
-		xdg.ConfigDirs = append(xdg.ConfigDirs, defaultConfigurationLocationsUnix...)
+	if filepath.IsAbs(configFile) {
+		// no need to search further
+		return "", fmt.Errorf("config file %q does not exist", configFile)
 	}
-	// try xdg as the "standard" for user configuration locations
-	xdgFilename, err := xdg.SearchConfigFile(filepath.Join(XDGAppName, configFile))
+
+	// 2. try xdg as the "standard" for user configuration locations
+	xdgFilename, err := xdg.SearchConfigFile(filepath.Join(constants.Name, configFile))
 	if err == nil {
 		if fileExists(xdgFilename) {
 			return xdgFilename, nil
 		}
 	}
+
+	if runtime.GOOS == "windows" || runtime.GOOS == "darwin" {
+		// Not found
+		return "", err
+	}
+
+	// 3. search some standard unix paths
+	for _, configPath := range constants.ConfigLocationsUnix {
+		filename := filepath.Join(configPath, configFile)
+		if fileExists(filename) {
+			return filename, nil
+		}
+	}
+
 	// Not found
-	return "", err
+	return "", fmt.Errorf(
+		"could not locate %q in any of the following paths: %s",
+		configFile,
+		strings.Join(append(xdg.ConfigDirs, constants.ConfigLocationsUnix...), ", "),
+	)
 }
 
 func fileExists(filename string) bool {

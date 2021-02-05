@@ -1,6 +1,7 @@
 package constants
 
 const (
+	Name                   = "hosts-filter"
 	BufferInitialLines     = 20000
 	BufferInitialEntries   = 30000
 	DefaultFilteredIP      = "0.0.0.0"
@@ -23,5 +24,11 @@ var (
 		"ip6-allnodes",
 		"ip6-allrouters",
 		"ip6-allhosts",
+	}
+
+	ConfigLocationsUnix = []string{
+		"/etc/" + Name,
+		"/usr/local/etc/" + Name,
+		"/opt/local/etc/" + Name,
 	}
 )

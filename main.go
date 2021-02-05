@@ -155,6 +155,18 @@ func main() {
 		clog.Warningf("hosts file %q does not exist and will be created.", c.HostsFile)
 	}
 
+	if flags.stdout {
+		// send the file to the default output
+		err = hosts.Update(source, c.IP, list.SortedKeys(entries), os.Stdout)
+		if err != nil {
+			clog.Errorf("cannot write to standard output: %v", err)
+			exitCode = 1
+			return
+		}
+		return
+	}
+
+	// save the hosts file back (via a temporary file)
 	tempfile := c.HostsFile + "-" + randSeq(6)
 	err = saveHostsfile(source, c.IP, list.SortedKeys(entries), tempfile)
 	if err != nil {
@@ -173,7 +185,7 @@ func main() {
 }
 
 func banner() {
-	clog.Debugf("hosts-filter %s compiled with %s", version, runtime.Version())
+	clog.Debugf("%s %s compiled with %s", constants.Name, version, runtime.Version())
 }
 
 func loadListfile(filename string, entries map[string]bool) error {
