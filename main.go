@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"regexp"
 	"runtime"
 	"sort"
 	"time"
@@ -20,7 +21,7 @@ import (
 
 // These fields are populated by the goreleaser build
 var (
-	version = "0.11.1-dev"
+	version = "0.1.0-dev"
 	commit  = ""
 	date    = ""
 	builtBy = ""
@@ -63,6 +64,8 @@ func main() {
 	// keep this defer last if possible (so it will be first at the end)
 	defer showPanicData()
 
+	banner()
+
 	// seed random number generation
 	rand.Seed(time.Now().UnixNano())
 
@@ -89,11 +92,17 @@ func main() {
 	}
 	if c.HostsFile == "" {
 		if runtime.GOOS == "windows" {
-			c.HostsFile = os.ExpandEnv(constants.DefaultWindowsHostFile)
+			c.HostsFile = constants.DefaultWindowsHostFile
 		} else {
-			c.HostsFile = os.ExpandEnv(constants.DefaultUnixHostFile)
+			c.HostsFile = constants.DefaultUnixHostFile
 		}
 	}
+	if runtime.GOOS == "windows" {
+		// variable expansion is always done the "unix" way, but never the "windows" way
+		pattern := regexp.MustCompile(`%([^%]+)%`)
+		c.HostsFile = pattern.ReplaceAllString(c.HostsFile, `\${$1}`)
+	}
+	c.HostsFile = os.ExpandEnv(c.HostsFile)
 
 	var entries map[string]bool
 
@@ -149,6 +158,10 @@ func main() {
 		exitCode = 1
 		return
 	}
+}
+
+func banner() {
+	clog.Debugf("hosts-filter %s compiled with %s", version, runtime.Version())
 }
 
 func loadListfile(filename string, entries map[string]bool) error {
@@ -231,4 +244,13 @@ func randSeq(n int) string {
 		b[i] = letters[rand.Intn(len(letters))]
 	}
 	return string(b)
+}
+
+func expandEnv(value string) string {
+	if runtime.GOOS == "windows" {
+		// variable expansion is always done the "unix" way, but never the "windows" way
+		pattern := regexp.MustCompile(`%([^%]+)%`)
+		value = pattern.ReplaceAllString(value, `${$1}`)
+	}
+	return os.ExpandEnv(value)
 }
