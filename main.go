@@ -97,12 +97,7 @@ func main() {
 			c.HostsFile = constants.DefaultUnixHostFile
 		}
 	}
-	if runtime.GOOS == "windows" {
-		// variable expansion is always done the "unix" way, but never the "windows" way
-		pattern := regexp.MustCompile(`%([^%]+)%`)
-		c.HostsFile = pattern.ReplaceAllString(c.HostsFile, `\${$1}`)
-	}
-	c.HostsFile = os.ExpandEnv(c.HostsFile)
+	c.HostsFile = expandEnv(c.HostsFile)
 
 	var entries map[string]bool
 
