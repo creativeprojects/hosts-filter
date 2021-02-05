@@ -1,6 +1,7 @@
 package hosts
 
 import (
+	"runtime"
 	"strings"
 	"testing"
 
@@ -8,17 +9,38 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var (
+	eol              string
+	simpleContent    string
+	ownContent       string
+	generatedContent string
+)
+
+func init() {
+	eol = "\n"
+	simpleContent = "#\n#\n#\n127.0.0.1 localhost\n"
+	ownContent = "-- 1\n#\n2\n3\n# --\n"
+	generatedContent = "ip line1\nip line2\n"
+
+	if runtime.GOOS == "windows" {
+		eol = "\r\n"
+		simpleContent = "#\r\n#\r\n#\r\n127.0.0.1 localhost\r\n"
+		ownContent = "-- 1\r\n#\r\n2\r\n3\n# --\r\n"
+		generatedContent = "ip line1\r\nip line2\r\n"
+	}
+}
+
 func TestVirginHosts(t *testing.T) {
-	contents := "#\n#\n#\n127.0.0.1 localhost\n"
+	contents := simpleContent
 	result, _, found := extractOwnSection(contents)
 	assert.False(t, found)
 	assert.Equal(t, contents, result)
 }
 
 func TestOwnSection(t *testing.T) {
-	own := "-- 1\n#\n2\n3\n# --\n"
-	before := "#\n#\n#\n127.0.0.1 localhost\n"
-	after := "# blah blah\n"
+	own := ownContent
+	before := simpleContent
+	after := "# blah blah" + eol
 	contents := before + startMarker + own + endMarker + after
 	beforeResult, afterResult, found := extractOwnSection(contents)
 	assert.True(t, found)
@@ -27,7 +49,7 @@ func TestOwnSection(t *testing.T) {
 }
 
 func TestSectionOnItsOwn(t *testing.T) {
-	own := "-- 1\n#\n2\n3\n# --\n"
+	own := ownContent
 	contents := startMarker + own + endMarker
 	beforeResult, afterResult, found := extractOwnSection(contents)
 	assert.True(t, found)
@@ -46,19 +68,19 @@ func TestUpdateSimpleHostsfile(t *testing.T) {
 	buffer := &strings.Builder{}
 	err := Update("", "ip", []string{"line1", "line2"}, buffer)
 	require.NoError(t, err)
-	assert.Equal(t, "\n"+startMarker+"ip line1\nip line2\n"+endMarker, buffer.String())
+	assert.Equal(t, eol+startMarker+generatedContent+endMarker, buffer.String())
 }
 
 func TestUpdateExistingHostsfile(t *testing.T) {
 	buffer := &strings.Builder{}
-	err := Update("something\n"+startMarker+endMarker, "ip", []string{"line1", "line2"}, buffer)
+	err := Update("something"+eol+startMarker+endMarker, "ip", []string{"line1", "line2"}, buffer)
 	require.NoError(t, err)
-	assert.Equal(t, "something\n"+startMarker+"ip line1\nip line2\n"+endMarker, buffer.String())
+	assert.Equal(t, "something"+eol+startMarker+generatedContent+endMarker, buffer.String())
 }
 
 func TestRemoveEntriesFromHostsfile(t *testing.T) {
 	buffer := &strings.Builder{}
-	err := Update("\n"+startMarker+endMarker, "ip", nil, buffer)
+	err := Update(eol+startMarker+endMarker, "ip", nil, buffer)
 	require.NoError(t, err)
-	assert.Equal(t, "\n", buffer.String())
+	assert.Equal(t, eol, buffer.String())
 }

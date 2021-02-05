@@ -1,3 +1,5 @@
+[![Build](https://github.com/creativeprojects/hosts-filter/workflows/Build/badge.svg)](https://github.com/creativeprojects/go-selfupdate/actions)
+
 # Introduction
 
 Compile and update your hosts file from various block lists. Works on various unixes, Linux, macOS X and Windows.
