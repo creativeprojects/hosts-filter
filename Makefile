@@ -63,4 +63,7 @@ release-snapshot:
 		goreleaser build --snapshot --config .goreleaser.yml --rm-dist
 
 generate-install:
-		godownloader .goreleaser.yml -r creativeprojects/resticprofile -o install.sh
+		# download latest pre-compiled version of godownloader
+		$(GORUN) github.com/creativeprojects/go-selfupdate/cmd/go-get-release github.com/goreleaser/godownloader
+		$(GOMOD) tidy
+		godownloader .godownloader.yml -r creativeprojects/hosts-filter -o install.sh

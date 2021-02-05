@@ -1,4 +1,4 @@
-[![Build](https://github.com/creativeprojects/hosts-filter/workflows/Build/badge.svg)](https://github.com/creativeprojects/go-selfupdate/actions)
+[![Build](https://github.com/creativeprojects/hosts-filter/workflows/Build/badge.svg)](https://github.com/creativeprojects/hosts-filter/actions)
 
 # Introduction
 
