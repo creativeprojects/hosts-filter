@@ -48,17 +48,17 @@ builds:
 
 archives:
   - id: targz
-    builds:
-    - hostsfilter_targz
+    ids:
+      - hostsfilter_targz
     format: tar.gz
 
   - id: zip
-    builds:
-    - hostsfilter_zip
+    ids:
+      - hostsfilter_zip
     format: zip
-    
+
 checksum:
-  name_template: 'checksums.txt'
+  name_template: "checksums.txt"
 
 snapshot:
   version_template: "{{ .Tag }}-next"
@@ -67,17 +67,16 @@ changelog:
   sort: asc
   filters:
     exclude:
-      - '^docs:'
-      - '^test:'
+      - "^docs:"
+      - "^test:"
 
 dockers:
-  -
-    goos: linux
+  - goos: linux
     goarch: amd64
     ids:
-    - hostsfilter_targz
+      - hostsfilter_targz
     image_templates:
-    - "creativeprojects/hosts-filter:latest"
-    - "creativeprojects/hosts-filter:{{ .RawVersion }}"
+      - "creativeprojects/hosts-filter:latest"
+      - "creativeprojects/hosts-filter:{{ .RawVersion }}"
     skip_push: false
     dockerfile: build/Dockerfile

@@ -9,7 +9,6 @@ import (
 	"os"
 	"regexp"
 	"runtime"
-	"time"
 
 	"github.com/creativeprojects/clog"
 	"github.com/creativeprojects/hosts-filter/cfg"
@@ -64,9 +63,6 @@ func main() {
 	defer showPanicData()
 
 	banner()
-
-	// seed random number generation
-	rand.Seed(time.Now().UnixNano())
 
 	configFile, err := cfg.FindConfigurationFile(flags.config)
 	if err != nil {

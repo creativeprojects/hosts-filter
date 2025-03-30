@@ -1,0 +1,42 @@
+project_name: hosts-filter
+
+version: 2
+
+before:
+  hooks:
+    - go mod download
+    - go generate ./...
+
+builds:
+  - id: hostsfilter_targz
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - "6"
+      - "7"
+
+archives:
+  - id: targz
+    ids:
+      - hostsfilter_targz
+    format: tar.gz
+
+dockers:
+  - goos: linux
+    goarch: amd64
+    ids:
+      - hostsfilter_targz
+    image_templates:
+      - "creativeprojects/hosts-filter:latest"
+      - "creativeprojects/hosts-filter:{{ .RawVersion }}"
+    skip_push: false
+    dockerfile: build/Dockerfile
+
+release:
+  disable: true
