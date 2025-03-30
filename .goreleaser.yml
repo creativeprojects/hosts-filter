@@ -50,12 +50,12 @@ archives:
   - id: targz
     ids:
       - hostsfilter_targz
-    format: tar.gz
+    formats: [tar.gz]
 
   - id: zip
     ids:
       - hostsfilter_zip
-    format: zip
+    formats: [zip]
 
 checksum:
   name_template: "checksums.txt"

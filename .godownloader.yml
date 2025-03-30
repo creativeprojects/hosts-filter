@@ -47,16 +47,16 @@ builds:
 archives:
   - id: targz
     builds:
-    - hostsfilter_targz
-    format: tar.gz
+      - hostsfilter_targz
+    formats: [tar.gz]
 
   - id: zip
     builds:
-    - hostsfilter_zip
-    format: zip
-    
+      - hostsfilter_zip
+    formats: [zip]
+
 checksum:
-  name_template: 'checksums.txt'
+  name_template: "checksums.txt"
 
 snapshot:
   name_template: "{{ .Tag }}-next"
@@ -65,5 +65,5 @@ changelog:
   sort: asc
   filters:
     exclude:
-      - '^docs:'
-      - '^test:'
+      - "^docs:"
+      - "^test:"
